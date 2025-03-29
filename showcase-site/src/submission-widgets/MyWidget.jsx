@@ -1,30 +1,103 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef } from "react";
+import p5 from "p5";
+import ml5 from "ml5";
 
-const MyWidget = () => {
-  const [text, setText] = useState('Hello, World!');
+const PostureFixer = () => {
+  const sketchRef = useRef(null);
 
-  const changeText = () => setText('Text has been changed!');
+  useEffect(() => {
+    let video;
+    let bodyPose;
+    let poses = [];
+
+    const sketch = (p) => {
+      p.setup = () => {
+        p.createCanvas(640, 480).parent(sketchRef.current);
+
+        // Capture video
+        video = p.createCapture(p.VIDEO);
+        video.size(640, 480);
+        video.hide();
+
+        // Initialize MoveNet model
+        bodyPose = ml5.bodyPose("MoveNet", { flipped: false }, () => {
+          console.log("MoveNet model loaded!");
+          bodyPose.detectStart(video, gotPoses);
+        });
+      };
+
+      const gotPoses = (results) => {
+        poses = results;
+      };
+
+      p.draw = () => {
+        p.image(video, 0, 0);
+
+        if (poses.length > 0) {
+          let pose = poses[0];
+
+          // Draws a circle at the detected nose position
+          p.fill(236, 1, 90);
+          p.noStroke();
+          p.circle(pose.nose.x, pose.nose.y, 48);
+
+          // Draws circles at the detected ear positions
+          p.fill(45, 197, 244);
+          p.circle(pose.left_ear.x, pose.left_ear.y, 16);
+          p.circle(pose.right_ear.x, pose.right_ear.y, 16);
+
+          // Draws circles at the detected shoulder positions
+          p.fill(146, 83, 161);
+          p.circle(pose.right_shoulder.x, pose.right_shoulder.y, 64);
+          p.circle(pose.left_shoulder.x, pose.left_shoulder.y, 64);
+
+          // Draws circle halfway between the shoulders
+          p.fill(255, 0, 0);
+          let shoulderMidX = (pose.right_shoulder.x + pose.left_shoulder.x) / 2;
+          let shoulderMidY = (pose.right_shoulder.y + pose.left_shoulder.y) / 2;
+          p.circle(shoulderMidX, shoulderMidY, 32);
+
+          let noseShoulderGap = shoulderMidY - pose.nose.y;
+
+          console.log("\n\n\nNose to shoulder gap:", noseShoulderGap);
+        
+          if (noseShoulderGap > 125) {
+          p.fill(0, 255, 0);
+          p.textSize(32);
+          p.text("Good posture :D!", 10, 30);
+          } else if (noseShoulderGap < 125) {
+          p.fill(255, 0, 0);
+          p.textSize(32);
+          p.text("Bad posture :( !", 10, 30);
+          }
+
+          // Draw warning message if user slouches
+          // if (pose.right_shoulder.y < pose.nose.y + 20 || pose.left_shoulder.y < pose.nose.y + 20) {
+          //   p.fill(255, 0, 0);
+          //   p.textSize(32);
+          //   p.text("Warning: Slouching detected!", 10, 30);
+          // }
+        }
+      };
+    };
+
+    let myP5 = new p5(sketch);
+
+    return () => {
+      myP5.remove(); // Clean up on unmount
+    };
+  }, []);
 
   return (
-    <div className="p-6 max-w-sm mx-auto bg-white rounded-xl shadow-lg">
-      <div className="text-center space-y-4">
-        <h2 className="text-xl font-bold text-gray-800">Empty Component</h2>
+    <div
+      ref={sketchRef}
+      style={{
+        width: '640px',
+        height: '480px',
+        margin: '20px auto', 
+        border: '1px solid #ccc',
+      }}
+    ></div>
+  );};
 
-        <div className="text-2xl font-bold text-blue-600">
-          {text}
-        </div>
-
-        <div className="flex justify-center">
-          <button
-            onClick={changeText}
-            className="p-2 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors"
-          >
-            Change Text
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default MyWidget;
+export default PostureFixer;
