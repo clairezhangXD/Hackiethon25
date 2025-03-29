@@ -6,9 +6,19 @@ import badPostureImage from "./MyAssets/Panda3.png"; // Image for bad posture
 
 const PostureFixer = () => {
   const sketchRef = useRef(null);
+<<<<<<< Updated upstream
   const [goodPosture, setGoodPosture] = useState(null); // State to track posture
+=======
+  const [showVideo, setShowVideo] = useState(true);
+  const showVideoRef = useRef(showVideo);
+>>>>>>> Stashed changes
 
   useEffect(() => {
+    showVideoRef.current = showVideo;
+  }, [showVideo]);
+
+  useEffect(() => {
+    
     let video;
     let bodyPose;
     let poses = [];
