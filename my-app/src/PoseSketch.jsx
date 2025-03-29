@@ -63,7 +63,7 @@ const PoseSketch = () => {
             if (noseShoulderGap > 125) {
             p.fill(0, 255, 0);
             p.textSize(32);
-            p.text("Good posture!", 10, 30);
+            p.text("Good posture test!", 10, 30);
             } else if (noseShoulderGap < 125) {
             p.fill(255, 0, 0);
             p.textSize(32);
