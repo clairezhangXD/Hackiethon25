@@ -15,7 +15,6 @@ const PostureFixer = () => {
   }, [showVideo]);
 
   useEffect(() => {
-    
     let video;
     let bodyPose;
     let poses = [];
@@ -29,7 +28,7 @@ const PostureFixer = () => {
         video.size(640, 480);
         video.hide();
 
-        // Initialise MoveNet model
+        // Initialize MoveNet model
         bodyPose = ml5.bodyPose("MoveNet", { flipped: false }, () => {
           console.log("MoveNet model loaded!");
           bodyPose.detectStart(video, gotPoses);
@@ -46,12 +45,12 @@ const PostureFixer = () => {
         if (poses.length > 0) {
           let pose = poses[0];
 
-          // Draws a circle at the detected nose position
+          // Draw a circle at the detected nose position
           p.fill(116, 255, 148);
           p.noStroke();
           p.circle(pose.nose.x, pose.nose.y, 5);
 
-          // Draws circle halfway between the shoulders
+          // Draw a circle halfway between the shoulders
           p.fill(116, 255, 148);
           let shoulderMidX = (pose.right_shoulder.x + pose.left_shoulder.x) / 2;
           let shoulderMidY = (pose.right_shoulder.y + pose.left_shoulder.y) / 2;
@@ -63,20 +62,18 @@ const PostureFixer = () => {
 
           // Update posture state
           if (noseShoulderGap > 125) {
-            
             // Good posture message
             p.fill(116, 255, 148);
             p.textSize(32);
             p.text("Good posture :D !", 200, 30);
             setGoodPosture(true); // Update React state
-
           } else {
-            // Draws a big circle at the detected nose position to clown bad posture
+            // Draw a big circle at the detected nose position to clown bad posture
             p.fill(255, 113, 137);
             p.noStroke();
             p.circle(pose.nose.x, pose.nose.y, 48);
 
-            // Draws circle halfway between the shoulders
+            // Draw circle halfway between the shoulders
             p.fill(255, 113, 137);
             p.circle(shoulderMidX, shoulderMidY, 5);
 
@@ -84,6 +81,7 @@ const PostureFixer = () => {
             p.fill(255, 113, 137);
             p.textSize(32);
             p.text("Bad posture :( !", 200, 30);
+
             setGoodPosture(false); // Update React state
           }
         }
@@ -103,7 +101,7 @@ const PostureFixer = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "blue",
+        backgroundColor: goodPosture ? "#2F369A" : "red",
         padding: "20px",
         borderRadius: "10px",
         width: "800px",
@@ -113,25 +111,43 @@ const PostureFixer = () => {
       }}
     >
       <div ref={sketchRef} style={{ marginRight: "20px" }}></div>
+
+      {/* Wrapper for Image and Overlay */}
       <div
-        style={{
-          width: "140px",
-          height: "140px",
-          backgroundColor: "white",
-          borderRadius: "10px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          fontSize: "18px",
-          fontWeight: "bold",
-        }}
+        // style={{
+        //   position: "relative",
+        //   width: "140px",
+        //   height: "140px",
+        //   borderRadius: "10px",
+        // }}
       >
         <img
           src={goodPosture ? goodPostureImage : badPostureImage} // Dynamic Image
           alt="Posture Status"
-          width="300"
+          width="140"
+          height="140"
+          style={{
+            borderRadius: "10px",
+            display: "block",
+            width: "100%",
+            height: "120%",
+          }}
         />
+
+        {/* Translucent red overlay */}
+        {!goodPosture && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "120%",
+              backgroundColor: "rgba(255, 0, 0, 0.1)", // Red translucent film
+              borderRadius: "10px", // Match border radius to image container
+            }}
+          />
+        )}
       </div>
     </div>
   );
