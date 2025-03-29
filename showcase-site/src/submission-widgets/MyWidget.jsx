@@ -1,9 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import p5 from "p5";
 import ml5 from "ml5";
+import goodPostureImage from "./MyAssets/Panda1.png"; // Image for good posture
+import badPostureImage from "./MyAssets/Panda3.png"; // Image for bad posture
 
 const PostureFixer = () => {
   const sketchRef = useRef(null);
+  const [goodPosture, setGoodPosture] = useState(null); // State to track posture
 
   useEffect(() => {
     let video;
@@ -60,23 +63,19 @@ const PostureFixer = () => {
           let noseShoulderGap = shoulderMidY - pose.nose.y;
 
           console.log("\n\n\nNose to shoulder gap:", noseShoulderGap);
-        
-          if (noseShoulderGap > 125) {
-          p.fill(0, 255, 0);
-          p.textSize(32);
-          p.text("Good posture :D!", 10, 30);
-          } else if (noseShoulderGap < 125) {
-          p.fill(255, 0, 0);
-          p.textSize(32);
-          p.text("Bad posture :( !", 10, 30);
-          }
 
-          // Draw warning message if user slouches
-          // if (pose.right_shoulder.y < pose.nose.y + 20 || pose.left_shoulder.y < pose.nose.y + 20) {
-          //   p.fill(255, 0, 0);
-          //   p.textSize(32);
-          //   p.text("Warning: Slouching detected!", 10, 30);
-          // }
+          // Update posture state
+          if (noseShoulderGap > 125) {
+            p.fill(0, 255, 0);
+            p.textSize(32);
+            p.text("Good posture :D!", 10, 30);
+            setGoodPosture(true); // Update React state
+          } else {
+            p.fill(255, 0, 0);
+            p.textSize(32);
+            p.text("Bad posture :( !", 10, 30);
+            setGoodPosture(false); // Update React state
+          }
         }
       };
     };
@@ -90,14 +89,42 @@ const PostureFixer = () => {
 
   return (
     <div
-      ref={sketchRef}
       style={{
-        width: '640px',
-        height: '480px',
-        margin: '20px auto', 
-        border: '1px solid #ccc',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "blue",
+        padding: "20px",
+        borderRadius: "10px",
+        width: "800px",
+        height: "500px",
+        margin: "20px auto",
+        border: "1px solid #ccc",
       }}
-    ></div>
-  );};
+    >
+      <div ref={sketchRef} style={{ marginRight: "20px" }}></div>
+      <div
+        style={{
+          width: "140px",
+          height: "140px",
+          backgroundColor: "white",
+          borderRadius: "10px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          fontSize: "18px",
+          fontWeight: "bold",
+        }}
+      >
+        <img
+          src={goodPosture ? goodPostureImage : badPostureImage} // Dynamic Image
+          alt="Posture Status"
+          width="300"
+        />
+      </div>
+    </div>
+  );
+};
 
 export default PostureFixer;
