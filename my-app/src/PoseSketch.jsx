@@ -50,6 +50,32 @@ const PoseSketch = () => {
           p.fill(146, 83, 161);
           p.circle(pose.right_shoulder.x, pose.right_shoulder.y, 64);
           p.circle(pose.left_shoulder.x, pose.left_shoulder.y, 64);
+
+          // Draw circle halfway between the shoulders
+          p.fill(255, 0, 0);
+          let shoulderMidX = (pose.right_shoulder.x + pose.left_shoulder.x) / 2;
+          let shoulderMidY = (pose.right_shoulder.y + pose.left_shoulder.y) / 2;
+          p.circle(shoulderMidX, shoulderMidY, 32);
+
+          let noseShoulderGap = shoulderMidY - pose.nose.y;
+
+          console.log("\n\n\nNose to shoulder gap:", noseShoulderGap);
+            if (noseShoulderGap > 125) {
+            p.fill(0, 255, 0);
+            p.textSize(32);
+            p.text("Good posture!", 10, 30);
+            } else if (noseShoulderGap < 125) {
+            p.fill(255, 0, 0);
+            p.textSize(32);
+            p.text("Slouching detected!", 10, 30);
+            }
+
+          // Draw warning message if user slouches
+          // if (pose.right_shoulder.y < pose.nose.y + 20 || pose.left_shoulder.y < pose.nose.y + 20) {
+          //   p.fill(255, 0, 0);
+          //   p.textSize(32);
+          //   p.text("Warning: Slouching detected!", 10, 30);
+          // }
         }
       };
     };
