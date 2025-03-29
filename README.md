@@ -1,4 +1,4 @@
-# 🏆 Hackiethon2025 Widget Challenge - Test
+# 🏆 Hackiethon2025 Widget Challenge
 
 ## 📌 Overview
 
