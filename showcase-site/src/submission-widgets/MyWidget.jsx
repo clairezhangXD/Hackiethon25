@@ -6,12 +6,9 @@ import badPostureImage from "./MyAssets/Panda3.png"; // Image for bad posture
 
 const PostureFixer = () => {
   const sketchRef = useRef(null);
-<<<<<<< Updated upstream
   const [goodPosture, setGoodPosture] = useState(null); // State to track posture
-=======
   const [showVideo, setShowVideo] = useState(true);
   const showVideoRef = useRef(showVideo);
->>>>>>> Stashed changes
 
   useEffect(() => {
     showVideoRef.current = showVideo;
@@ -32,7 +29,7 @@ const PostureFixer = () => {
         video.size(640, 480);
         video.hide();
 
-        // Initialize MoveNet model
+        // Initialise MoveNet model
         bodyPose = ml5.bodyPose("MoveNet", { flipped: false }, () => {
           console.log("MoveNet model loaded!");
           bodyPose.detectStart(video, gotPoses);
@@ -50,25 +47,15 @@ const PostureFixer = () => {
           let pose = poses[0];
 
           // Draws a circle at the detected nose position
-          p.fill(236, 1, 90);
+          p.fill(116, 255, 148);
           p.noStroke();
-          p.circle(pose.nose.x, pose.nose.y, 48);
-
-          // Draws circles at the detected ear positions
-          p.fill(45, 197, 244);
-          p.circle(pose.left_ear.x, pose.left_ear.y, 16);
-          p.circle(pose.right_ear.x, pose.right_ear.y, 16);
-
-          // Draws circles at the detected shoulder positions
-          p.fill(146, 83, 161);
-          p.circle(pose.right_shoulder.x, pose.right_shoulder.y, 64);
-          p.circle(pose.left_shoulder.x, pose.left_shoulder.y, 64);
+          p.circle(pose.nose.x, pose.nose.y, 5);
 
           // Draws circle halfway between the shoulders
-          p.fill(255, 0, 0);
+          p.fill(116, 255, 148);
           let shoulderMidX = (pose.right_shoulder.x + pose.left_shoulder.x) / 2;
           let shoulderMidY = (pose.right_shoulder.y + pose.left_shoulder.y) / 2;
-          p.circle(shoulderMidX, shoulderMidY, 32);
+          p.circle(shoulderMidX, shoulderMidY, 5);
 
           let noseShoulderGap = shoulderMidY - pose.nose.y;
 
@@ -76,14 +63,27 @@ const PostureFixer = () => {
 
           // Update posture state
           if (noseShoulderGap > 125) {
-            p.fill(0, 255, 0);
+            
+            // Good posture message
+            p.fill(116, 255, 148);
             p.textSize(32);
-            p.text("Good posture :D!", 10, 30);
+            p.text("Good posture :D !", 200, 30);
             setGoodPosture(true); // Update React state
+
           } else {
-            p.fill(255, 0, 0);
+            // Draws a big circle at the detected nose position to clown bad posture
+            p.fill(255, 113, 137);
+            p.noStroke();
+            p.circle(pose.nose.x, pose.nose.y, 48);
+
+            // Draws circle halfway between the shoulders
+            p.fill(255, 113, 137);
+            p.circle(shoulderMidX, shoulderMidY, 5);
+
+            // Bad posture message
+            p.fill(255, 113, 137);
             p.textSize(32);
-            p.text("Bad posture :( !", 10, 30);
+            p.text("Bad posture :( !", 200, 30);
             setGoodPosture(false); // Update React state
           }
         }
